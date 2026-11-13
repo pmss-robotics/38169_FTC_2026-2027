@@ -44,6 +44,7 @@ public class Team4Teleop extends LinearOpMode {
 
 
         telemetry.addLine("Bot Ready rn");
+        telemetry.addData("current direction in degrees: ", "%.1f", drive.getHeadingDegrees());telemetry.addData("IMU angles", drive.getAnglesDebug());
         telemetry.update();
 
         waitForStart();

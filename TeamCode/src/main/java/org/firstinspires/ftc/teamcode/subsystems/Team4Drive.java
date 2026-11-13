@@ -1,10 +1,13 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import android.annotation.SuppressLint;
+
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 public class Team4Drive {
 
@@ -41,7 +44,7 @@ public class Team4Drive {
                 RevHubOrientationOnRobot.LogoFacingDirection.UP,
                 RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
         ));
-        imu.initialize(parameters);
+        boolean imOK = imu.initialize(parameters);
     }
 
     /**
@@ -91,5 +94,11 @@ public class Team4Drive {
     //get direction
     public double getHeadingDegrees() {
         return Math.toDegrees(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+    }
+    @SuppressLint("DefaultLocale")
+    public String getAnglesDebug() {
+        YawPitchRollAngles a = imu.getRobotYawPitchRollAngles();
+        return String.format("yaw %.1f  pitch %.1f  roll %.1f",
+                a.getYaw(AngleUnit.DEGREES), a.getPitch(AngleUnit.DEGREES), a.getRoll(AngleUnit.DEGREES));
     }
 }
