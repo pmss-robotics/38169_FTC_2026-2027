@@ -9,28 +9,6 @@ public class Team4Teleop extends LinearOpMode {
 
     // get team4drive object
     private Team4Drive drive;
-
-    // Speed modes dpad up to cycle
-    private enum SpeedMode {
-        slow("Slow", 0.25),
-        medium("Normal", 0.5),
-        fast("Fast", 1.0);
-
-        final String label;
-        final double multiplier;
-
-        SpeedMode(String label, double multiplier) {
-            this.label = label;
-            this.multiplier = multiplier;
-        }
-
-        SpeedMode next() {
-            SpeedMode[] all = values();
-            return all[(ordinal() + 1) % all.length];
-        }
-    }
-
-    private SpeedMode speedMode = SpeedMode.medium;
     private boolean lastKeyPressed = false;
 
     private int inputCurve;
@@ -54,29 +32,20 @@ public class Team4Teleop extends LinearOpMode {
             // Reset IMU if back button is pressed
             if (gamepad1.back) {
                 drive.resetHeading();
+
+                // Pass gamepad inputs directly into the subsystem method
+                drive.drive(
+                        gamepad1.left_stick_x,
+                        -gamepad1.left_stick_y,
+                        gamepad1.right_stick_x,
+                        inputCurve
+                );
+
+                // Telemetry display
+                telemetry.addData("current direction in degrees: ", "%.1f", drive.getHeadingDegrees());
+                telemetry.addLine("Press d-pad up to cycle speed modes");
+                telemetry.update();
             }
-
-            // Cycle speed mode with D-pad up
-            boolean keyPressed = gamepad1.dpad_up;
-            if (keyPressed && !lastKeyPressed) {
-                speedMode = speedMode.next();
-            }
-            lastKeyPressed = keyPressed;
-
-            // Pass gamepad inputs directly into the subsystem method
-            drive.drive(
-                    gamepad1.left_stick_x,
-                    -gamepad1.left_stick_y,
-                    gamepad1.right_stick_x,
-                    inputCurve,
-                    speedMode.multiplier
-            );
-
-            // Telemetry display
-            telemetry.addData("current speed rn: ", "%s (%.0f%%)", speedMode.label, speedMode.multiplier * 100);
-            telemetry.addData("current direction in degrees: ", "%.1f", drive.getHeadingDegrees());
-            telemetry.addLine("Press d-pad up to cycle speed modes");
-            telemetry.update();
         }
     }
 }

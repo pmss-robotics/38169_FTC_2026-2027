@@ -54,10 +54,9 @@ public class Team4Drive {
      * @param rawY            Y joystick input
      * @param rawRx           Turning joystick input
      * @param inputCurve      Int for joystick multiplier curve (ex 1 is linear, 2 is quadratic, 3 cubic)
-     * @param speedMultiplier Current speed scale (this is from speedModes enum
      */
     // method drive controls the mecanum drive
-    public void drive(double rawX, double rawY, double rawRx, int inputCurve, double speedMultiplier) {
+    public void drive(double rawX, double rawY, double rawRx, int inputCurve) {
         // input curve
         double x = Math.copySign(Math.pow(Math.abs(rawX), inputCurve), rawX);
         double y = Math.copySign(Math.pow(Math.abs(rawY), inputCurve), rawY);
@@ -79,10 +78,10 @@ public class Team4Drive {
         double brPower = (rotY + rotX - rx) / denominator;
 
         // put power in motors with speed multiplier
-        frontLeftDrive.setPower(flPower * speedMultiplier);
-        backLeftDrive.setPower(blPower * speedMultiplier);
-        frontRightDrive.setPower(frPower * speedMultiplier);
-        backRightDrive.setPower(brPower * speedMultiplier);
+        frontLeftDrive.setPower(flPower);
+        backLeftDrive.setPower(blPower);
+        frontRightDrive.setPower(frPower);
+        backRightDrive.setPower(brPower);
     }
 
     // utility methods
