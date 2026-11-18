@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -8,10 +7,12 @@ import org.firstinspires.ftc.teamcode.subsystems.FlyWheelSubsystem;
 
 @TeleOp(name = "FulinnaTeleOp", group = "TeleOp")
 public class FlyWheelTeleop extends CommandOpMode {
+    private FlyWheelSubsystem outtakeMotor;
+
     @Override
     public void initialize() {
-        FlyWheelSubsystem outtakeMotor = new FlyWheelSubsystem(hardwareMap, telemetry);
-        register(flywheel);
+        outtakeMotor = new FlyWheelSubsystem(hardwareMap, telemetry);
+        register(outtakeMotor);
     }
 
     @Override
