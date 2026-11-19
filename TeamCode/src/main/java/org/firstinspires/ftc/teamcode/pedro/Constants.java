@@ -14,13 +14,26 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class Constants {
 
-    // update robot mass
+    // ---------------------------------------------------------------
+    // FOLLOWER (tune these with Pedro's tuning OpModes)
+    // ---------------------------------------------------------------
     public static FollowerConstants followerConstants = new FollowerConstants()
-            .mass(5);
+            // TODO: weigh the robot (with battery) and enter kg
+            .mass(5)
+            // TODO: Run "Forward Zero Power Acceleration Tuner" and paste result (negative number)
+            .forwardZeroPowerAcceleration(-25.9)
+            // TODO: Run "Lateral Zero Power Acceleration Tuner" and paste result (negative number)
+            .lateralZeroPowerAcceleration(-67.3);
+
+    // Once the PID tuners are done, add them here, e.g.:
+    //   .translationalPIDFCoefficients(new com.pedropathing.control.PIDFCoefficients(0.1, 0, 0.01, 0))
+    //   .headingPIDFCoefficients(new com.pedropathing.control.PIDFCoefficients(1, 0, 0.01, 0))
 
     public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
 
-    // drivetrain
+    // ---------------------------------------------------------------
+    // DRIVETRAIN
+    // ---------------------------------------------------------------
     public static MecanumConstants driveConstants = new MecanumConstants()
             .maxPower(1)
             .leftFrontMotorName("fl")
@@ -30,8 +43,16 @@ public class Constants {
             .leftFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
             .leftRearMotorDirection(DcMotorSimple.Direction.REVERSE)
             .rightFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
-            .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD);
+            .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD)
+            // TODO: Run "Forward Velocity Tuner" and paste result (in/sec)
+            .xVelocity(81.3)
+            // TODO: Run "Lateral Velocity Tuner" and paste result (in/sec)
+            .yVelocity(65.4)
+            .useBrakeModeInTeleOp(true);
 
+    // ---------------------------------------------------------------
+    // LOCALIZER (you confirmed this works)
+    // ---------------------------------------------------------------
     public static PinpointConstants localizerConstants = new PinpointConstants()
             .forwardPodY(-3.5)
             .strafePodX(-6.5)
