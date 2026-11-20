@@ -10,6 +10,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagSingleDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagClusterDetection;
+import com.acmerobotics.dashboard.FtcDashboard;
 
 import java.util.List;
 
@@ -31,6 +32,9 @@ public class VisionTest extends LinearOpMode {
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                 .addProcessor(aprilTag)
                 .build();
+
+        // Stream the camera to FTC Dashboard (http://192.168.43.1:8080/dash)
+        FtcDashboard.getInstance().startCameraStream(portal, 30); // 30 fps max
 
         telemetry.addLine("Initializing Vision System...");
         telemetry.update();

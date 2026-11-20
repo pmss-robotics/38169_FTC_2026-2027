@@ -39,6 +39,18 @@ public class XAxisMotor extends SubsystemBase{
         turretMotorX.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         turretMotorX.setPower(0.5);
     }
+
+    public void movement(double speed, boolean direction) {
+        double power = Math.min(1.0, Math.abs(speed));
+
+        turretMotorX.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        if (direction) {
+            turretMotorX.setPower(power);
+        } else {
+            turretMotorX.setPower(-power);
+        }
+    }
     public double getCurrentAngle() {
         return turretMotorX.getCurrentPosition();
     }

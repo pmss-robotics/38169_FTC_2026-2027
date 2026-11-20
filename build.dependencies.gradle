@@ -3,6 +3,8 @@ repositories {
     google() // Needed for androidx
     //pedro
     maven { url = 'https://maven.pedropathing.com' }
+    //FTC Dashboard
+    maven { url = 'https://maven.brott.dev/' }
 }
 
 dependencies {
