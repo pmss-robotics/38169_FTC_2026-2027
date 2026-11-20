@@ -31,10 +31,6 @@ public class FlyWheelSubsystem extends SubsystemBase{
         // Use PIDF for manual, precise adjustments
         outtakeMotor.setVelocityPIDFCoefficients(kP, kI, kD, kF);
     }
-    public void setPower(double power) {
-        targetRPM = power * MAX_RPM;
-        outtakeMotor.setPower(power);
-    }
     public void setVelocityRPM(double rpm) {
         targetRPM = Math.max(0, Math.min(rpm, MAX_RPM));
         double ticksPerSec = (targetRPM * TICKS_PER_REV) / 60.0;
@@ -57,11 +53,6 @@ public class FlyWheelSubsystem extends SubsystemBase{
 
         telemetry.addData("Target RPM", targetRPM);
         telemetry.addData("Actual RPM", actualRPM);
-
-
-
-
-
     }
 
 }
