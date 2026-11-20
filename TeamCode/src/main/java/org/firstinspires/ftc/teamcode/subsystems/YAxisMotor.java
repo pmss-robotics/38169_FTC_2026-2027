@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+//Y-Axis motor for turret
 public class YAxisMotor extends SubsystemBase {
     private final Telemetry telemetry;
     private final DcMotorEx turretMotorY;

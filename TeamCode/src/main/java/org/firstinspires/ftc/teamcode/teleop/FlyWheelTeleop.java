@@ -4,8 +4,10 @@ import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.subsystems.FlyWheelSubsystem;
+import com.qualcomm.robotcore.hardware.Servo;
 
-@TeleOp(name = "FulinnaTeleOp", group = "TeleOp")
+
+@TeleOp(name = "FulinnaShooterTeleOp", group = "TeleOp")
 public class FlyWheelTeleop extends CommandOpMode {
     private FlyWheelSubsystem outtakeMotor;
 
