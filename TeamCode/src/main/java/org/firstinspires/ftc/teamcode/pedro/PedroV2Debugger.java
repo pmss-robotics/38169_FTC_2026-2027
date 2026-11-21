@@ -37,7 +37,8 @@ import java.util.Arrays;
  *     run away, and freezes a snapshot of what it saw.
  *
  * Controls (gamepad 1):
- *   A          drive forward 24 in          X          drive back to (0, 0)
+ *   A          drive 24 in straight ahead   X          drive back to where A started
+ *              (from wherever the robot is)
  *   Y          reset pose to (0,0,0)        B          emergency stop
  *   D-Pad Right  next localizer check       D-Pad Left switch telemetry page
  *   D-Pad Up     single-wheel spin test (25% power, wheels off the ground)
@@ -57,8 +58,8 @@ public class PedroV2Debugger extends OpMode {
 
     // ---------------- hardware ----------------
     private Follower follower;
-    private PathChain forward24;
-    private PathChain returnOrigin;
+    /** Where the robot was when A was last pressed; X drives back here. */
+    private Pose pathStart = null;
 
     private GoBildaPinpointDriver pinpoint;
     private IMU hubImu;
@@ -96,15 +97,8 @@ public class PedroV2Debugger extends OpMode {
     public void init() {
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(new Pose(0, 0, 0));
-
-        forward24 = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(0, 0, 0), new Pose(24, 0, 0)))
-                .setConstantHeadingInterpolation(0)
-                .build();
-        returnOrigin = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(24, 0, 0), new Pose(0, 0, 0)))
-                .setConstantHeadingInterpolation(0)
-                .build();
+        // Paths are built when A / X is pressed, starting from wherever the robot is then
+        // (see startForward / startReturn), so earlier pushing or drift can't put it "off path".
 
         // Same motors Pedro uses (names and directions come from Constants, so they always match)
         try {
@@ -141,7 +135,7 @@ public class PedroV2Debugger extends OpMode {
 
         telemetry.addLine("=== PEDRO V2 DEBUGGER ===");
         telemetry.addLine("Keep the robot STILL until the Pinpoint says READY.");
-        telemetry.addLine("A fwd 24in | X return | Y reset | B stop");
+        telemetry.addLine("A 24in ahead | X back to A start | Y reset | B stop");
         telemetry.addLine("DPad Right: next localizer check | DPad Left: page");
         telemetry.addLine("DPad Up: single-wheel test (wheels off ground)");
         telemetry.update();
@@ -209,10 +203,10 @@ public class PedroV2Debugger extends OpMode {
     // =====================================================================
     private void handleButtons() {
         if (pressed(0, gamepad1.a)) {
-            startPath(forward24, TestState.FOLLOWING_FORWARD);
+            startForward();
         }
         if (pressed(1, gamepad1.x)) {
-            startPath(returnOrigin, TestState.FOLLOWING_RETURN);
+            startReturn();
         }
         if (pressed(2, gamepad1.y)) {
             follower.breakFollowing();
@@ -247,6 +241,28 @@ public class PedroV2Debugger extends OpMode {
                 && !follower.isBusy()) {
             currentState = TestState.TRACKING_ONLY;
         }
+    }
+
+    /** A: drive 24 in straight ahead from where the robot is now, holding its current heading. */
+    private void startForward() {
+        Pose start = follower.getPose();
+        double h = start.getHeading();
+        Pose end = new Pose(start.getX() + 24 * Math.cos(h), start.getY() + 24 * Math.sin(h), h);
+        pathStart = start;
+        startPath(follower.pathBuilder()
+                .addPath(new BezierLine(start, end))
+                .setConstantHeadingInterpolation(h)
+                .build(), TestState.FOLLOWING_FORWARD);
+    }
+
+    /** X: drive back to where A was last pressed (backwards, same heading). */
+    private void startReturn() {
+        if (pathStart == null) return; // nothing to return to yet
+        Pose start = follower.getPose();
+        startPath(follower.pathBuilder()
+                .addPath(new BezierLine(start, pathStart))
+                .setConstantHeadingInterpolation(pathStart.getHeading())
+                .build(), TestState.FOLLOWING_RETURN);
     }
 
     private void startPath(PathChain path, TestState state) {
@@ -563,10 +579,12 @@ public class PedroV2Debugger extends OpMode {
         Pose p = follower.getPose();
         double dhPin = pinpointHeadingDeltaDeg();
         double dhHub = hubHeadingDeltaDeg();
+        double[] moved = robotFrameDelta();
         abortSnapshot = String.format("Reason: %s at %.2f s\nPose X %.1f Y %.1f H %.0f deg\n" +
+                        "Moved since start: fwd %+.1f  left %+.1f in\n" +
                         "Turned: Pinpoint %+.0f vs hub %+.0f deg\n%s",
                 reason, pathTimer.seconds(), p.getX(), p.getY(), Math.toDegrees(p.getHeading()),
-                dhPin, dhHub, likelyCause(dhPin, dhHub));
+                moved[0], moved[1], dhPin, dhHub, likelyCause(dhPin, dhHub));
         follower.breakFollowing();
         stopAllMotors();
         currentState = TestState.ABORTED;
