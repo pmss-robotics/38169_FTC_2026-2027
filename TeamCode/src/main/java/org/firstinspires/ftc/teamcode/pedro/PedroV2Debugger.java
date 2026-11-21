@@ -168,6 +168,10 @@ public class PedroV2Debugger extends OpMode {
         loopMs = loopTimer.milliseconds();
         loopTimer.reset();
 
+        // Buttons BEFORE follower.update(): Pedro only computes its path errors inside update(),
+        // so reading them in the same loop a path was started (before update) returns null.
+        handleButtons();
+
         // Keep the localizer updating in every state; only drive in path states
         if (currentState == TestState.MOTOR_ISOLATION) {
             follower.updatePose();
@@ -176,7 +180,6 @@ public class PedroV2Debugger extends OpMode {
         }
         updateHubYaw();
 
-        handleButtons();
         if (currentState == TestState.FOLLOWING_FORWARD || currentState == TestState.FOLLOWING_RETURN) {
             followerWatchdog();
         }
@@ -186,10 +189,17 @@ public class PedroV2Debugger extends OpMode {
             telemetry.addLine("!!! WATCHDOG STOPPED THE ROBOT !!!");
             telemetry.addLine(abortSnapshot);
         }
-        if (page == 0) {
-            localizerPage();
-        } else {
-            followerPage();
+        // A telemetry bug should show on screen, not crash the OpMode mid-test
+        try {
+            if (page == 0) {
+                localizerPage();
+            } else {
+                followerPage();
+            }
+        } catch (RuntimeException e) {
+            StackTraceElement top = e.getStackTrace().length > 0 ? e.getStackTrace()[0] : null;
+            telemetry.addLine("TELEMETRY ERROR (robot still safe): " + e);
+            if (top != null) telemetry.addLine("at " + top);
         }
         telemetry.update();
     }
@@ -308,10 +318,15 @@ public class PedroV2Debugger extends OpMode {
 
         telemetry.addLine("--- PINPOINT HEALTH ---");
         if (pinpoint != null) {
-            double roll = pinpoint.getRoll(AngleUnit.DEGREES);
-            double pitch = pinpoint.getPitch(AngleUnit.DEGREES);
             telemetry.addData("Status", "%s  (%.0f Hz)", pinpoint.getDeviceStatus(), pinpoint.getFrequency());
-            telemetry.addData("Roll | Pitch", "%.1f | %.1f deg  %s", roll, pitch, mountingVerdict(roll, pitch));
+            try {
+                // Older Pinpoint firmware (v1/v2) has no roll/pitch output and throws here
+                double roll = pinpoint.getRoll(AngleUnit.DEGREES);
+                double pitch = pinpoint.getPitch(AngleUnit.DEGREES);
+                telemetry.addData("Roll | Pitch", "%.1f | %.1f deg  %s", roll, pitch, mountingVerdict(roll, pitch));
+            } catch (RuntimeException e) {
+                telemetry.addData("Roll | Pitch", "n/a (old Pinpoint firmware) - check it is flat, label up");
+            }
             telemetry.addData("Offsets in use", "fwdPodY %.2f  strafePodX %.2f in",
                     pinpoint.getXOffset(DistanceUnit.INCH), pinpoint.getYOffset(DistanceUnit.INCH));
             int dEx = pinpoint.getEncoderX() - baseEncX;
