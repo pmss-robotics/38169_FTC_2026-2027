@@ -32,20 +32,20 @@ public class Team4Teleop extends LinearOpMode {
             // Reset IMU if back button is pressed
             if (gamepad1.back) {
                 drive.resetHeading();
-
-                // Pass gamepad inputs directly into the subsystem method
-                drive.drive(
-                        gamepad1.left_stick_x,
-                        -gamepad1.left_stick_y,
-                        gamepad1.right_stick_x,
-                        inputCurve
-                );
-
-                // Telemetry display
-                telemetry.addData("current direction in degrees: ", "%.1f", drive.getHeadingDegrees());
-                telemetry.addLine("Press d-pad up to cycle speed modes");
-                telemetry.update();
             }
+            // Pass gamepad inputs directly into the subsystem method
+            drive.drive(
+                    gamepad1.left_stick_x,
+                    -gamepad1.left_stick_y,
+                    gamepad1.right_stick_x,
+                    inputCurve
+            );
+
+            // Telemetry display
+            telemetry.addData("current direction in degrees: ", "%.1f", drive.getHeadingDegrees());
+            telemetry.addLine("Press d-pad up to cycle speed modes");
+            telemetry.update();
+
         }
     }
 }
