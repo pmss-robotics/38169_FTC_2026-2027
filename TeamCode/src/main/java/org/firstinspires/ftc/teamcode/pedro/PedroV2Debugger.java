@@ -44,7 +44,8 @@ import java.util.Arrays;
  *   D-Pad Up     single-wheel spin test (25% power, wheels off the ground)
  */
 @TeleOp(name = "Pedro v2 Full Debugger", group = "Pedro")
-public class PedroV2Debugger extends OpMode {
+public class
+PedroV2Debugger extends OpMode {
 
     // ---------------- settings ----------------
     /** Watchdog: stop the path if the robot is this far (in) off the path. */
