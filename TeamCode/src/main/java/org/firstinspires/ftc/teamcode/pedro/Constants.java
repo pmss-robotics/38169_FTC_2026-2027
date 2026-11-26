@@ -14,15 +14,10 @@
 
     public class Constants {
 
-        // ---------------------------------------------------------------
-        // FOLLOWER (tune these with Pedro's tuning OpModes)
-        // ---------------------------------------------------------------
         public static FollowerConstants followerConstants = new FollowerConstants()
                 // TODO: weigh the robot (with battery) and enter kg
                 .mass(5)
-                // TODO: Run "Forward Zero Power Acceleration Tuner" and paste result (negative number)
                 .forwardZeroPowerAcceleration(-74)
-                // TODO: Run "Lateral Zero Power Acceleration Tuner" and paste result (negative number)
                 .lateralZeroPowerAcceleration(-87)
                 .translationalPIDFCoefficients(new com.pedropathing.control.PIDFCoefficients(0.1, 0, 0., 0))
                 .drivePIDFCoefficients(new com.pedropathing.control.FilteredPIDFCoefficients(0.025, 0.0, 1.0E-5, 0.6, 0.01))
@@ -32,9 +27,6 @@
 
         public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
 
-        // ---------------------------------------------------------------
-        // DRIVETRAIN
-        // ---------------------------------------------------------------
         public static MecanumConstants driveConstants = new MecanumConstants()
                 .maxPower(1)
                 .leftFrontMotorName("fl")
@@ -45,18 +37,16 @@
                 .leftRearMotorDirection(DcMotorSimple.Direction.REVERSE)
                 .rightFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
                 .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD)
-                // TODO: Run "Forward Velocity Tuner" and paste result (in/sec) Completed
+
                 .xVelocity(78.8)
-                // TODO: Run "Lateral Velocity Tuner" and paste result (in/ CompLeted
                 .yVelocity(71.3)
                 .useBrakeModeInTeleOp(true);
 
-        // ---------------------------------------------------------------
-        // LOCALIZER (you confirmed this works)
-        // ---------------------------------------------------------------
         public static PinpointConstants localizerConstants = new PinpointConstants()
-                .forwardPodY(-3.5)
-                .strafePodX(-6.5)
+                //TODO: Measure the distance to each x, y localization sensor
+                .forwardPodY(-3.5) // placeholder
+                .strafePodX(-6.5)  // placeholder
+
                 .distanceUnit(DistanceUnit.INCH)
                 .hardwareMapName("pinpoint")
                 .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
