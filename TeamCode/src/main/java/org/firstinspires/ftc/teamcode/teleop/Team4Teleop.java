@@ -34,6 +34,7 @@ import org.firstinspires.ftc.teamcode.subsystems.YAxisMotor;
 public class Team4Teleop extends LinearOpMode {
 
     // ---- TUNE THESE ----
+    private static final double TELEOP_LENGTH = 120.0;     // teleop match length in seconds
     private static final int INPUT_CURVE = 3;              // 1 linear, 2 quadratic, 3 cubic
     private static final double SHOOT_RPM = 4500.0;        // flywheel speed when X is on
     private static final double AT_SPEED_TOLERANCE_RPM = 150.0;
@@ -52,6 +53,7 @@ public class Team4Teleop extends LinearOpMode {
     private KickerSubsystem kicker;
     private XAxisMotor turret;
     private YAxisMotor ramp;
+    private final ElapsedTime teleopTimer = new ElapsedTime();
 
     @Override
     public void runOpMode() {
@@ -87,6 +89,7 @@ public class Team4Teleop extends LinearOpMode {
         telemetry.update();
 
         waitForStart();
+        teleopTimer.reset();
         drive.resetHeading();
         ElapsedTime loopTimer = new ElapsedTime();
 
@@ -174,6 +177,16 @@ public class Team4Teleop extends LinearOpMode {
             flywheel.periodic();  // target / actual RPM
             ramp.periodic();      // ramp target / current angle
             turret.periodic();    // turret ticks
+            // calculate remaining teleop time
+            double timeLeft = Math.max(0.0, TELEOP_LENGTH - teleopTimer.seconds());
+
+            // telemetry display
+            telemetry.addData("Time left", "%.1f", timeLeft);
+            if (timeLeft <= 20.0) {
+                telemetry.addLine("ENDGAME - Return to LOADING ZONE");
+            } else if (timeLeft <= 60.0) {
+                telemetry.addLine("FLOWERS UNLOCKED (NECTAR allowed)");
+            }
             telemetry.update();
         }
 
