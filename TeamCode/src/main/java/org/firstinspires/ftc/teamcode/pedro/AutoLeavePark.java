@@ -10,24 +10,23 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 /*
  *
- * Points: +3 for leave (robot no longer touching the perimeter wall)
- *         +5 for park (robot at least somewhat inside the loading zone)
- *         Important: Points are assessed by the end of Auto
+- Points: +3 for leave (robot no longer touching the perimeter wall)
+-         +5 for park (robot at least somewhat inside the loading zone)
+-         Important: Points are assessed by the end of Auto
  *
- * Parameters:
- *         - parkX
- *         - parkY
- *         - parkHeading
+- Parameters:
+-         - parkX
+-         - parkY
+-         - parkHeading
  *
- * The parkX and parkY control the park destination coordinates (robot relative)
- * and the parkHeading controls the direction the robots faces
- * Coordinates are
+- The parkX and parkY control the park destination coordinates (robot relative)
+- and the parkHeading controls the direction the robots faces
  */
-@Autonomous(name = "Auto Leave + Park", group = "Pedro")
+@Autonomous(name = "Auto Leave Park", group = "Pedro", preselectTeleOp = "Matthew Teleop")
 public class AutoLeavePark extends LinearOpMode {
-    private static final double parkX = 20;      // length of field is 144 in
-    private static final double parkY = 0;       // length of field is 144 in
-    private static final double parkHeading = 0; //direction
+    private static final double parkX = -50;      // length of field is 144 in
+    private static final double parkY = 4;       // length of field is 144 in
+    private static final double parkHeading = 0;  //direction
 
     private static final double autoLength = 30.0; // seconds
 
@@ -58,25 +57,25 @@ public class AutoLeavePark extends LinearOpMode {
             followUntilDone(toPark, autoLength - autoTimer.seconds() - 1.0);
         }
 
-        // Hold the spot till the end of Auto
+        // Hold the park spot till the 30s end of auto
         follower.holdPoint(parkPose);
-        while (opModeIsActive()) {
+        while (opModeIsActive() && autoTimer.seconds() < autoLength) {
             follower.update();
-            telemetry.addData("Time", "%.1f", autoTimer.seconds());
+            telemetry.addData("Auto Time Left", "%.1f", Math.max(0.0, autoLength - autoTimer.seconds()));
             telemetry.addData("x", follower.getPose().getX());
             telemetry.addData("y", follower.getPose().getY());
             telemetry.update();
         }
     }
 
-    //path follower function
+    //path follower function stuff
     private void followUntilDone(PathChain path, double timeLimitSeconds) {
         double startTime = autoTimer.seconds();
         follower.followPath(path);
         while (opModeIsActive() && follower.isBusy()
                 && autoTimer.seconds() - startTime < timeLimitSeconds) {
             follower.update();
-            telemetry.addData("Time", "%.1f", autoTimer.seconds());
+            telemetry.addData("Auto Time Left", "%.1f", Math.max(0.0, autoLength - autoTimer.seconds()));
             telemetry.addData("x", follower.getPose().getX());
             telemetry.addData("y", follower.getPose().getY());
             telemetry.update();
