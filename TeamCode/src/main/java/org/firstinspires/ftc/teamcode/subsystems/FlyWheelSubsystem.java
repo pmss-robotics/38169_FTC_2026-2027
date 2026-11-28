@@ -39,6 +39,25 @@ public class FlyWheelSubsystem extends SubsystemBase{
     public void stop() {
         setVelocityRPM(0.0);
     }
+
+    /** Spin backwards at the given RPM (used to clear jams). */
+    public void reverse(double rpm) {
+        targetRPM = -Math.max(0, Math.min(Math.abs(rpm), MAX_RPM));
+        outtakeMotor.setVelocity((targetRPM * TICKS_PER_REV) / 60.0);
+    }
+
+    public double getActualRPM() {
+        return (outtakeMotor.getVelocity() * 60.0) / TICKS_PER_REV;
+    }
+
+    public double getTargetRPM() {
+        return targetRPM;
+    }
+
+    /** True when spinning forward and within toleranceRPM of the target. */
+    public boolean isAtSpeed(double toleranceRPM) {
+        return targetRPM > 0 && Math.abs(getActualRPM() - targetRPM) <= toleranceRPM;
+    }
     @Override
 
     public void periodic() {

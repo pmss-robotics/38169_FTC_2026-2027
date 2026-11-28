@@ -34,7 +34,9 @@ public class YAxisMotor extends SubsystemBase {
     public void setTargetAngle(double degrees) {
         targetAngle = Math.max(MIN_ANGLE, Math.min(degrees, MAX_ANGLE));
         int targetTicks = (int) (targetAngle * TICKS_PER_DEGREE);
-        turretMotorY.setTargetPosition(targetTicks + turretMotorY.getCurrentPosition());
+        // Absolute target (encoder was zeroed at MIN_ANGLE). Adding getCurrentPosition() here
+        // made the target run away every time adjustAngle() was called.
+        turretMotorY.setTargetPosition(targetTicks);
         turretMotorY.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         turretMotorY.setPower(0.5);
     }
